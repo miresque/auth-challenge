@@ -30,7 +30,7 @@ app.use((err, req, res, next) => {
             return res.status(400).json({ error: "User does not exist." })
         }
         if(err.code === 'P2002') {
-            return res.status(400).json({ error: "A User with this name already exists." })
+            return res.status(409).json({ error: "A User with this name already exists." })
         }
     }
 })
