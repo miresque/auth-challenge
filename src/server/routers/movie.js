@@ -1,4 +1,5 @@
 const express = require('express');
+const auth = require('../middleware/auth');
 const {
     getAllMovies,
     createMovie
@@ -7,6 +8,6 @@ const {
 const router = express.Router();
 
 router.get('/', getAllMovies);
-router.post('/', createMovie);
+router.post('/', auth, createMovie);
 
 module.exports = router;

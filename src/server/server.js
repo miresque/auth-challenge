@@ -1,8 +1,7 @@
-// Import express and other middleware
+// Import express and cors
 const express = require('express');
 require('express-async-errors');
 const cors = require('cors');
-const auth = require('./middleware/auth')
 
 // Set up express
 const app = express();
@@ -22,9 +21,12 @@ app.use('/user', userRouter);
 
 const movieRouter = require('./routers/movie');
 
-app.use('/movie', auth, movieRouter);
+app.use('/movie', movieRouter);
 
 app.use((err, req, res, next) => {
+    if (err instanceof JsonWebTokenError) {
+        return res.status(401).json({ error: 'Invalid token provided.' })
+    }
     if (err instanceof PrismaClientKnownRequestError) {
         console.log(err.code)
         if(err.code === 'P2025') {
@@ -34,6 +36,7 @@ app.use((err, req, res, next) => {
             return res.status(409).json({ error: "A User with this name already exists." })
         }
     }
+    res.status(500).json({ error: 'Error handler hit!' })
 })
 
 module.exports = app
