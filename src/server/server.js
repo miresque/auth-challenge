@@ -12,8 +12,9 @@ app.use(express.json());
 // Tell express to use a URL Encoding middleware
 app.use(express.urlencoded({ extended: true }));
 
-// Import Prisma Request Error helper
+// Import Request Error helpers
 const { PrismaClientKnownRequestError } = require('@prisma/client/runtime'); 
+const { JsonWebTokenError } = require('jsonwebtoken');
 
 
 const userRouter = require('./routers/user');
@@ -24,11 +25,10 @@ const movieRouter = require('./routers/movie');
 app.use('/movie', movieRouter);
 
 app.use((err, req, res, next) => {
-    if (err instanceof JsonWebTokenError) {
+    if (err instanceof JsonWebTokenError || err.message.includes("reading 'split'")) {
         return res.status(401).json({ error: 'Invalid token provided.' })
     }
     if (err instanceof PrismaClientKnownRequestError) {
-        console.log(err.code)
         if(err.code === 'P2025') {
             return res.status(400).json({ error: "User does not exist." })
         }
