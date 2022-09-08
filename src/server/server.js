@@ -1,7 +1,8 @@
-// Import express and cors
+// Import express and other middleware
 const express = require('express');
 require('express-async-errors');
 const cors = require('cors');
+const auth = require('./middleware/auth')
 
 // Set up express
 const app = express();
@@ -21,7 +22,7 @@ app.use('/user', userRouter);
 
 const movieRouter = require('./routers/movie');
 
-app.use('/movie', movieRouter);
+app.use('/movie', auth, movieRouter);
 
 app.use((err, req, res, next) => {
     if (err instanceof PrismaClientKnownRequestError) {
