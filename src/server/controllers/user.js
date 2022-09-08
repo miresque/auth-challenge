@@ -7,6 +7,10 @@ const jwtSecret = 'mysecret';
 
 const register = async (req, res) => {
     const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ error: "Missing fields in the request body" });
+    }
+
     const encryptedPassword = await bcrypt.hash(password, 10)
     const createdUser = await prisma.user.create({
         data: {
@@ -14,8 +18,7 @@ const register = async (req, res) => {
             password: encryptedPassword
         }
     });
-
-    res.json({ user: { id: createdUser.id, username: createdUser.username } });
+    res.status(201).json({ user: { id: createdUser.id, username: createdUser.username } });
 };
 
 const login = async (req, res) => {
